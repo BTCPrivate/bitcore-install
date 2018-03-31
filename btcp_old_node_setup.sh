@@ -106,7 +106,7 @@ EOF
 
 
 echo "To start the daemon and all services, run:"
-echo "./bitcore-btcp/start.sh"
+echo "nvm use v4; ./node_modules/bitcore-node/bin/bitcore-node start"
 echo "\n"
 echo "To view the explorer in your browser - http://server_ip:8001"
 echo "For https, we recommend you route through Cloudflare."
