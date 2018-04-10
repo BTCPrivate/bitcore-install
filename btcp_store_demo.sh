@@ -63,6 +63,22 @@ install_nvm_npm() {
   nvm alias default v4
 }
 
+# For bitcore-wallet-service:
+
+install_mongodb() {
+
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
+# Ubuntu >= 16; for prior versions, see mongodb website
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+
+# Make initial empty db dir
+sudo mkdir -p /data/db
+
+}
+
+ 
 install_bitcore() {
 
 # Install Bitcore (Headless)
@@ -109,17 +125,17 @@ cat << EOF > bitcore-node.json
       "spawn": {
         "datadir": "$HOME/.btcprivate",
         "exec": "$HOME/BitcoinPrivate/src/btcpd"
-        }
-      },
-      "insight-ui-btcp": {
-	"apiPrefix": "api",
-	"routePrefix": ""
-      },
-      "insight-api-btcp": {
-	"routePrefix": "api"
-      }
-    }
+       }
+     },
+     "insight-ui-btcp": {
+       "apiPrefix": "api",
+       "routePrefix": ""
+     },
+     "insight-api-btcp": {
+       "routePrefix": "api"
+     }
   }
+}
 EOF
 
 }
@@ -134,10 +150,13 @@ cd ~
 
 #install_nvm_npm
 
+#install_mongodb
+
 install_bitcore
 
 echo "Complete."
 echo \n
+echo "To start mongodb for bitcore-wallet-service, run 'mongod &'"
 echo "To start the bitcore-node, run (from btcp-explorer):"
 echo "nvm use v4; ./node_modules/bitcore-node/bin/bitcore-node start"
 echo \n
