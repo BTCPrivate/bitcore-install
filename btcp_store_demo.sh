@@ -2,6 +2,8 @@
 
 # BTCP Bitcore API + Explorer + Store / AddressWatch Demo
 
+# !!! EC2 - Make sure port 8001 is in your security group
+
 install_ubuntu() {
 
 # Get Ubuntu Dependencies
@@ -22,14 +24,14 @@ make_swapfile() {
 # WARNING: You must have a big Swapfile for the installation to succeed 
 # !!! EC2 Micro - Make sure you have a big enough Swapfile
 #
-#prev=$PWD
-#cd /
-#sudo dd if=/dev/zero of=swapfile bs=1M count=3000
-#sudo mkswap swapfile
-#sudo chmod 0600 /swapfile
-#sudo swapon swapfile
-#echo "/swapfile none swap sw 0 0" | sudo tee -a etc/fstab > /dev/null
-#cd prev 
+prev=$PWD
+cd /
+sudo dd if=/dev/zero of=swapfile bs=1M count=3000
+sudo mkswap swapfile
+sudo chmod 0600 /swapfile
+sudo swapon swapfile
+echo "/swapfile none swap sw 0 0" | sudo tee -a etc/fstab > /dev/null
+cd prev
 
 }
 
@@ -100,15 +102,10 @@ cd btcp-explorer
 
 # Install Insight API / UI (Explorer) (Headless)
 ../node_modules/bitcore-node-btcp/bin/bitcore-node install BTCPrivate/insight-api-btcp BTCPrivate/insight-ui-btcp BTCPrivate/store-demo
-# (BTCPrivate/address-watch)
-# (mv store-demo lemonade-stand)
+# (BTCPrivate/address-watch) (BTCPrivate/bitcore-wallet-service (untested))
 
 
 # Create config file for Bitcore
-# !!! OPTIONAL TODO add store-demo and address-watch to services as specified
-
-# !!! EC2 - Make sure port 8001 is in your security group 
-
 cat << EOF > bitcore-node.json
 {
   "network": "livenet",
@@ -166,6 +163,7 @@ install_bitcore
 
 echo "Complete."
 echo \n
+
 echo "To start mongodb for bitcore-wallet-service, run 'mongod &'"
 echo "To start the bitcore-node, run (from btcp-explorer):"
 echo "nvm use v4; ./node_modules/bitcore-node/bin/bitcore-node start"
