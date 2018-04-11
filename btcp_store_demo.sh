@@ -16,22 +16,22 @@ sudo apt-get -y install \
 
 # Install ZeroMQ libraries (Bitcore)
 sudo apt-get -y install libzmq3-dev
+
 }
 
 
 make_swapfile() {
 
-# WARNING: You must have a big Swapfile for the installation to succeed 
-# !!! EC2 Micro - Make sure you have a big enough Swapfile
-#
-prev=$PWD
+# You must have enough memory for the installation to succeed.
+
+PREV=$PWD
 cd /
 sudo dd if=/dev/zero of=swapfile bs=1M count=3000
 sudo mkswap swapfile
 sudo chmod 0600 /swapfile
 sudo swapon swapfile
 echo "/swapfile none swap sw 0 0" | sudo tee -a etc/fstab > /dev/null
-cd prev
+cd $PREV
 
 }
 
@@ -39,13 +39,12 @@ clone_and_build_btcp() {
 
 # Clone latest Bitcoin Private source, and checkout explorer-btcp
 git clone -b explorer-btcp https://github.com/BTCPrivate/BitcoinPrivate
-cd BitcoinPrivate
 
 # Fetch BTCP/Zcash ceremony params
-./btcputil/fetch-params.sh
+./BitcoinPrivate/btcputil/fetch-params.sh
 
 # Build Bitcoin Private
-./btcputil/build.sh -j$(nproc)
+./BitcoinPrivate/btcputil/build.sh -j$(nproc)
 
 # Make initial, empty btcprivate.conf if needed
 if [ ! -e ~/.btcprivate/btcprivate.conf ]
@@ -137,12 +136,17 @@ EOF
 
 }
 
-# Begin
+# -- Begin Fetching + Building --
 cd ~ 
 
 echo "Begin Setup."
-echo \n
-echo "Can we make you a 3gb swapfile? It takes a lot of memory to build BTCP."
+echo ""
+
+install_ubuntu
+
+echo ""
+echo "Can we make you a 3gb swapfile? EC2 Micro needs it because it takes a lot of memory to build BTCP."
+echo ""
 read -r -p "[y/N] " response
 case "$response" in
     [yY][eE][sS]|[yY]) 
@@ -162,30 +166,16 @@ install_nvm_npm
 install_bitcore
 
 echo "Complete."
-echo \n
+echo "" 
+
+# Verify that nvm is exported
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm 
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion 
 
 echo "To start mongodb for bitcore-wallet-service, run 'mongod &'"
-echo "To start the bitcore-node, run (from btcp-explorer):"
-echo "nvm use v4; ./node_modules/bitcore-node/bin/bitcore-node start"
-echo \n
+echo "To start the bitcore-node, run:"
+echo "cd ~/btcp-explorer; nvm use v4; ./node_modules/bitcore-node-btcp/bin/bitcore-node start"
+echo ""
 echo "To view the explorer in your browser - http://server_ip:8001"
 echo "For https, we recommend you route through Cloudflare. bitcore-node also supports it via the config; provide certs."
-
-
-
-# Service Installation Instructions from BitPay site (for newer versions of bitcore/bitcore-node, wip):
-
-# !!! OPTIONAL [TODO present cli options] Install store-demo
-#cd ~
-#git clone https://github.com/BTCPrivate/store-demo
-#cd btcp-explorer/node_modules
-#ln -s ~/store-demo
-
-
-# !!! OPTIONAL [TODO present cli options] Install address-watch
-#cd ~
-#git clone https://github.com/BTCPrivate/address-watch
-#cd btcp-explorer/node_modules
-#ln -s ~/address-watch
-
-
