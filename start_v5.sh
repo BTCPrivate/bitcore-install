@@ -9,5 +9,6 @@ export NVM_DIR="$HOME/.nvm"
 # For >= 5.0 (bitpay website instructions)
 nvm use v9; bitcored
 
-# For v3.1: cd btcp-explorer; nvm use v4; ./node_modules/bitcore-node/bin/bitcore-node start
+# For earlier versions:
+# cd btcp-explorer; nvm use v4; ./node_modules/bitcore-node/bin/bitcore-node start
 

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Bitcore v3.1 - BTCP Explorer + Store / AddressWatch Demo
+# BTCP Bitcore API + Explorer + Store / AddressWatch Demo
 
 install_ubuntu() {
+
 # Get Ubuntu Dependencies
 sudo apt-get update 
 
@@ -11,59 +12,68 @@ sudo apt-get -y install \
   autoconf libtool ncurses-dev unzip git python \
   zlib1g-dev wget bsdmainutils automake
 
-  # Install ZeroMQ libraries (Bitcore)
-  sudo apt-get -y install libzmq3-dev
+# Install ZeroMQ libraries (Bitcore)
+sudo apt-get -y install libzmq3-dev
 }
 
 
+make_swapfile() {
+
+# WARNING: You must have a big Swapfile for the installation to succeed 
+# !!! EC2 Micro - Make sure you have a big enough Swapfile
+#
+#prev=$PWD
+#cd /
+#sudo dd if=/dev/zero of=swapfile bs=1M count=3000
+#sudo mkswap swapfile
+#sudo chmod 0600 /swapfile
+#sudo swapon swapfile
+#echo "/swapfile none swap sw 0 0" | sudo tee -a etc/fstab > /dev/null
+#cd prev 
+
+}
+
 clone_and_build_btcp() {
-  # Clone latest Bitcoin Private source, and checkout explorer-btcp
-  git clone -b explorer-btcp https://github.com/BTCPrivate/BitcoinPrivate
-  cd BitcoinPrivate
 
-  # Fetch Zcash ceremony params
-  ./btcputil/fetch-params.sh
+# Clone latest Bitcoin Private source, and checkout explorer-btcp
+git clone -b explorer-btcp https://github.com/BTCPrivate/BitcoinPrivate
+cd BitcoinPrivate
 
-  # !!! OPTIONAL: EC2 - Make sure port 8001 is in your security group 
-  # !!! OPTIONAL: EC2 Micro - Make sure you have a big enough Swapfile
-  #prev=$PWD
-  #cd /
-  #sudo dd if=/dev/zero of=swapfile bs=1M count=3000
-  #sudo mkswap swapfile
-  #sudo chmod 0600 /swapfile
-  #sudo swapon swapfile
-  #echo "/swapfile none swap sw 0 0" | sudo tee -a etc/fstab > /dev/null
-  #cd prev 
+# Fetch BTCP/Zcash ceremony params
+./btcputil/fetch-params.sh
 
-  # Build Bitcoin Private
-  ./btcputil/build.sh -j$(nproc)
+# Build Bitcoin Private
+./btcputil/build.sh -j$(nproc)
 
-  # Make initial, empty btcprivate.conf if needed
-  if [ ! -e ~/.btcprivate/btcprivate.conf ]
-  then
-    touch ~/.btcprivate/btcprivate.conf
-  fi
+# Make initial, empty btcprivate.conf if needed
+if [ ! -e ~/.btcprivate/btcprivate.conf ]
+then
+  touch ~/.btcprivate/btcprivate.conf
+fi
+
 }
 
 install_nvm_npm() {
-  # Install npm
-  sudo apt-get -y install npm
 
-  # Install nvm (npm version manager)
-  wget -qO- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+# Install npm
+sudo apt-get -y install npm
 
-  # Set up nvm
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm 
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion 
+# Install nvm (npm version manager)
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 
-  # Install node v4
-  nvm install v4
-  nvm use v4
-  nvm alias default v4
+# Set up nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm 
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion 
+
+# Install node v4
+nvm install v4
+nvm use v4
+nvm alias default v4
+
 }
 
-# For bitcore-wallet-service:
+# MongoDB dependency for bitcore-wallet-service:
 
 install_mongodb() {
 
@@ -93,21 +103,11 @@ cd btcp-explorer
 # (BTCPrivate/address-watch)
 # (mv store-demo lemonade-stand)
 
-# !!! OPTIONAL [TODO present cli options] Install store-demo
-#cd ~
-#git clone https://github.com/BTCPrivate/store-demo
-#cd btcp-explorer/node_modules
-#ln -s ~/store-demo
-
-
-# !!! OPTIONAL [TODO present cli options] Install address-watch
-#cd ~
-#git clone https://github.com/BTCPrivate/address-watch
-#cd btcp-explorer/node_modules
-#ln -s ~/address-watch
 
 # Create config file for Bitcore
 # !!! OPTIONAL TODO add store-demo and address-watch to services as specified
+
+# !!! EC2 - Make sure port 8001 is in your security group 
 
 cat << EOF > bitcore-node.json
 {
@@ -141,14 +141,24 @@ EOF
 }
 
 # Begin
-echo "Begin Setup."
-echo \n
-
 cd ~ 
 
-#clone_and_build_btcp
+echo "Begin Setup."
+echo \n
+echo "Can we make you a 3gb swapfile? It takes a lot of memory to build BTCP."
+read -r -p "[y/N] " response
+case "$response" in
+    [yY][eE][sS]|[yY]) 
+        make_swapfile
+        clone_and_build_btcp
+        ;;
+    *)
+        clone_and_build_btcp 
+        ;;
+esac
 
-#install_nvm_npm
+
+install_nvm_npm
 
 #install_mongodb
 
@@ -162,3 +172,22 @@ echo "nvm use v4; ./node_modules/bitcore-node/bin/bitcore-node start"
 echo \n
 echo "To view the explorer in your browser - http://server_ip:8001"
 echo "For https, we recommend you route through Cloudflare. bitcore-node also supports it via the config; provide certs."
+
+
+
+# Service Installation Instructions from BitPay site (for newer versions of bitcore/bitcore-node, wip):
+
+# !!! OPTIONAL [TODO present cli options] Install store-demo
+#cd ~
+#git clone https://github.com/BTCPrivate/store-demo
+#cd btcp-explorer/node_modules
+#ln -s ~/store-demo
+
+
+# !!! OPTIONAL [TODO present cli options] Install address-watch
+#cd ~
+#git clone https://github.com/BTCPrivate/address-watch
+#cd btcp-explorer/node_modules
+#ln -s ~/address-watch
+
+
