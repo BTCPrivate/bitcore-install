@@ -46,11 +46,25 @@ git clone -b explorer-btcp https://github.com/BTCPrivate/BitcoinPrivate
 # Build Bitcoin Private
 ./BitcoinPrivate/btcputil/build.sh -j$(nproc)
 
+#Make
+if [ ! -e ~/.btcprivate/ ]
+then
+  echo "does not exist, creating folder"
+  mkdir ~/.btcprivate
+fi
+ echo "folder does exist..copying files"
+
+wget https://storage.googleapis.com/btcp-blockchain/BTCprivate.7z
+sudo apt install p7zip-full
+7z x BTCprivate.7z
+
 # Make initial, empty btcprivate.conf if needed
 if [ ! -e ~/.btcprivate/btcprivate.conf ]
 then
   touch ~/.btcprivate/btcprivate.conf
 fi
+
+
 
 }
 
@@ -159,11 +173,11 @@ case "$response" in
 esac
 
 
-install_nvm_npm
+##install_nvm_npm
 
 #install_mongodb
 
-install_bitcore
+##install_bitcore
 
 echo "Complete."
 echo "" 
