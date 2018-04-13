@@ -42,12 +42,13 @@ npm install -g BTCPrivate/bitcore
 # -- Bitcore --
 
 bitcore create btcp
-#bitcore install ...
+#bitcore install ch4ot1c/insight-api ch4ot1c/insight
+# (BTCPrivate/bitcore-wallet-service, BTCPrivate/store-demo, BTCPrivate/address-watch)
 cd btcp
 
-# TODO set generated package.json's refs to ch4ot1c/
 npm install
 
+# bitcored (bitpay website approach):
 # !!! OPTIONAL [TODO present cli options] Install store-demo
 #cd ~
 #git clone https://github.com/BTCPrivate/store-demo
@@ -59,12 +60,8 @@ npm install
 #git clone https://github.com/BTCPrivate/address-watch
 #cd btcp-explorer/node_modules
 #ln -s ~/address-watch
-
 # !!! OPTIONAL [TODO present cli options] Install bitcore-wallet-service
 
-
-#bitcore install ch4ot1c/insight-api ch4ot1c/insight
-# (BTCPrivate/bitcore-wallet-service, BTCPrivate/store-demo, BTCPrivate/address-watch)
 
 # Create config file for Bitcore
 cat << EOF > bitcore-node.json

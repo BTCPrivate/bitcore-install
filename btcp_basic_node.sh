@@ -60,21 +60,6 @@ cd btcp-explorer
 # Install Insight API / UI (Explorer) (Headless)
 ../node_modules/bitcore-node-btcp/bin/bitcore-node install BTCPrivate/insight-api-btcp BTCPrivate/insight-ui-btcp
 
-# !!! OPTIONAL [TODO present cli options] Install store-demo
-cd ~
-git clone https://github.com/BTCPrivate/store-demo
-cd btcp-explorer/node_modules
-ln -s ~/store-demo
-
-# !!! OPTIONAL [TODO present cli options] Install address-watch
-cd ~
-git clone https://github.com/BTCPrivate/address-watch
-cd btcp-explorer/node_modules
-ln -s ~/address-watch
-
-# Create config file for Bitcore
-# !!! OPTIONAL TODO add store-demo and address-watch to services as specified
-
 # Create config file for Bitcore
 cat << EOF > bitcore-node.json
 {

@@ -24,8 +24,8 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
-# Install node v9, or v4 for <=4.0
-nvm install v9 #v4
+# Install node v9
+nvm install v9
 
 # Fetch BTCP + Build from source
 ./build_btcp.sh
@@ -39,12 +39,13 @@ npm install npm-run-all -g
 
 
 cd ~
+
 mkdir btcp-bitcore-node
 cd btcp-bitcore-node
 
 # Install Bitcore (Headless)
-nvm use v9 #v4
-npm install ch4ot1c/bitcore-node # or #4.0-btcp for daemon-compatible(?)
+nvm use v9
+npm install ch4ot1c/bitcore-node # or branch 4.0-btcp (?)
 
 # Create Bitcore Node
 ./node_modules/bitcore-node/bin/bitcore-node create btcp-node
@@ -57,6 +58,7 @@ cd btcp-node
 cd node_modules
 npm install ch4ot1c/insight-api ch4ot1c/insight --save
 
+# Service Installation Instructions from BitPay site (for newer versions of bitcore/bitcore-node, wip):
 # !!! OPTIONAL [TODO present cli options] Install store-demo
 #cd ~
 #git clone https://github.com/BTCPrivate/store-demo
@@ -72,39 +74,7 @@ npm install ch4ot1c/insight-api ch4ot1c/insight --save
 # Create config file for Bitcore
 # !!! OPTIONAL TODO add store-demo and address-watch to services as specified
 
-# Create config file for Bitcore
-: '
-# daemon (4.0) (bitcoind, as opposed to bcoin)
-cat << EOF > bitcore-node.json
-{
-  "network": "livenet",
-  "port": 8001,
-  "services": [
-    "bitcoind",
-    "insight-api",
-    "insight-ui",
-    "web"
-  ],
-  "servicesConfig": {
-    "bitcoind": {
-      "spawn": {
-        "datadir": "$HOME/.btcprivate",
-        "exec": "$HOME/BitcoinPrivate/src/btcpd"
-      }
-    },
-    "insight-ui": {
-      "apiPrefix": "api",
-      "routePrefix": ""
-    },
-    "insight-api": {
-      "routePrefix": "api"
-    }
-  }
-}
-EOF
-'
-
-# daemon (5.0) (bcoin)
+# daemon (5.0) (uses bcoin)
 # optional - add bitcore-wallet-service
 cat << EOF > bitcore-node.json
 {
@@ -150,7 +120,7 @@ EOF
 
 
 echo "To start the daemon and all services, run:"
-echo "./start.sh"
+echo "bitcore start"
 echo "\n"
 echo "To view the explorer in your browser - http://server_ip:8001"
 echo "For https, we recommend you route through Cloudflare."
