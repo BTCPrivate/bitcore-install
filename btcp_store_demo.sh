@@ -46,11 +46,27 @@ git clone -b explorer-btcp https://github.com/BTCPrivate/BitcoinPrivate
 # Build Bitcoin Private
 ./BitcoinPrivate/btcputil/build.sh -j$(nproc)
 
+#Make hidden .btcprivate dir because the daemon has not ran and created the folder yet
+if [ ! -e ~/.btcprivate/ ]
+then
+  echo "Bitcoin Private Data Dir(.btcprivate) does not exist in the current user home directory, creating folder..."
+  mkdir ~/.btcprivate
+fi
+
+#Then download the blockchain.tar.gz and extract to speed up the initial syncing when first starting
+echo "Bitcoin Private Data Dir(.btcprivate) does exist in the current user home directory. Downloading and Extracting files"
+cd ~/.btcprivate
+wget https://storage.googleapis.com/btcpblockchain/blockchain.tar.gz
+tar -zxvf blockchain.tar.gz
+echo "Downloading and extracting of blockchain files completed"
+
 # Make initial, empty btcprivate.conf if needed
 if [ ! -e ~/.btcprivate/btcprivate.conf ]
 then
   touch ~/.btcprivate/btcprivate.conf
 fi
+
+
 
 }
 
