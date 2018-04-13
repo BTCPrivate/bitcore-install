@@ -53,12 +53,11 @@ then
   echo "Bitcoin Private Data Dir(.btcprivate) does not exist in the current user home directory, creating folder..."
   mkdir ~/.btcprivate
 fi
- echo "Bitcoin Private Data Dir(.btcprivate) does exist in the current user home directory. Downloading and Extracting files"
-
-wget https://storage.googleapis.com/btcp-blockchain/BTCprivate.7z
-sudo apt install p7zip-full
-7z x BTCprivate.7z
- echo "Downloading and extracting of blockchain files completed"
+echo "Bitcoin Private Data Dir(.btcprivate) does exist in the current user home directory. Downloading and Extracting files"
+cd ~/.btcprivate
+wget https://storage.googleapis.com/btcpblockchain/blockchain.tar.gz
+tar -zxvf blockchain.tar.gz
+echo "Downloading and extracting of blockchain files completed"
 
 # Make initial, empty btcprivate.conf if needed
 if [ ! -e ~/.btcprivate/btcprivate.conf ]
