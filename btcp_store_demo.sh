@@ -173,11 +173,11 @@ case "$response" in
 esac
 
 
-##install_nvm_npm
+install_nvm_npm
 
 #install_mongodb
 
-##install_bitcore
+install_bitcore
 
 echo "Complete."
 echo "" 
