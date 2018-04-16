@@ -38,7 +38,15 @@ cd $PREV
 clone_and_build_btcp() {
 
 # Clone latest Bitcoin Private source, and checkout explorer-btcp
-git clone -b explorer-btcp https://github.com/BTCPrivate/BitcoinPrivate
+if [ ! -e ~/BitcoinPrivate ]
+then
+  git clone -b explorer-btcp https://github.com/BTCPrivate/BitcoinPrivate
+fi
+
+# Freshen up
+#git checkout explorer-btcp
+#git checkout -- .
+#git pull
 
 # Fetch BTCP/Zcash ceremony params
 ./BitcoinPrivate/btcputil/fetch-params.sh
@@ -91,6 +99,8 @@ sudo mkdir -p /data/db
 
  
 install_bitcore() {
+
+cd ~
 
 # Install Bitcore (Headless)
 npm install BTCPrivate/bitcore-node-btcp
@@ -161,7 +171,7 @@ esac
 
 install_nvm_npm
 
-#install_mongodb
+install_mongodb
 
 install_bitcore
 
