@@ -106,10 +106,13 @@ fetch_btcp_binaries() {
 mkdir -p ~/BitcoinPrivate/src
 cd ~/BitcoinPrivate/src
 
-wget https://github.com/BTCPrivate/BitcoinPrivate/releases/1.0.12/btcp-linux-1.0.12.tar.gz
-tar -zxvf btcp-1.0.12-linux.tar.gz
+# TODO create -explorer releases
+local RELEASE = "1.0.11-5d06772-explorer"
+
+wget https://github.com/BTCPrivate/BitcoinPrivate/releases/$RELEASE/btcp-linux-$RELEASE.tar.gz
+tar -zxvf btcp-${RELEASE}-linux.tar.gz
 echo "Downloading and extracting BTCP files - Done."
-rm -rf btcp-1.0.12-linux.tar.gz
+rm -rf btcp-${RELEASE}-linux.tar.gz
 
 }
 
@@ -200,27 +203,32 @@ EOF
 
 run_install() {
 
+echo ""
 echo "Begin Setup."
 echo ""
 
 install_ubuntu
 
 
+echo ""
 echo "How would you like to build BTCP (btcpd and btcp-cli):"
 echo "1) From source code (takes a long time)"
 echo "2) Just download latest btcpd + btcp-cli binary"
 echo ""
-read -r -p "[1/2] " local response
+read -r -p "[1] " response
 case "$response" in
     [1]) 
         prompt_swapfile
         clone_and_build_btcp
         ;;
+'''
     [2])
         fetch_btcp_binaries
         ;;
+'''
     *)
         echo "Neither; Skipped."
+        ;;
 esac
 
 init_btcprivate_dotdir
@@ -237,7 +245,7 @@ echo ""
 # Verify that nvm is exported
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm 
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion 
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion 
 
 #echo "To start mongodb for bitcore-wallet-service, run 'mongod &'"
 echo "To start the bitcore-node, run:"
