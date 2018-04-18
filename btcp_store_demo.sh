@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # !!! EC2 - Make sure port 8001 is in your security group
+# Run this in a fresh environment. 
 
 install_ubuntu() {
 
@@ -215,17 +216,15 @@ echo "How would you like to build BTCP (btcpd and btcp-cli):"
 echo "1) From source code (takes a long time)"
 echo "2) Just download latest btcpd + btcp-cli binary"
 echo ""
-read -r -p "[1] " response
+read -r -p "[1/2] " response
 case "$response" in
     [1]) 
         prompt_swapfile
         clone_and_build_btcp
         ;;
-'''
     [2])
-        fetch_btcp_binaries
+        #fetch_btcp_binaries
         ;;
-'''
     *)
         echo "Neither; Skipped."
         ;;
@@ -253,7 +252,7 @@ echo "cd ~/btcp-explorer; nvm use v4; ./node_modules/bitcore-node-btcp/bin/bitco
 echo ""
 echo "To view the explorer - http://server_ip:8001"
 echo "To view the store demo in your browser - http://server_ip:8001"
-echo "For https, we recommend you route through Cloudflare. bitcore-node also supports it via the config; provide certs."
+echo "For https, provide certs in the config"
 
 }
 
