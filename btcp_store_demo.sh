@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# BTCP Bitcore API + Explorer + Store / AddressWatch Demo
-
 # !!! EC2 - Make sure port 8001 is in your security group
 
 install_ubuntu() {
@@ -19,12 +17,11 @@ sudo apt-get -y install libzmq3-dev
 
 }
 
-
 make_swapfile() {
 
-# You must have enough memory for the installation to succeed.
+# You must have enough memory for the BTCP build to succeed.
 
-PREV=$PWD
+local PREV=$PWD
 cd /
 sudo dd if=/dev/zero of=swapfile bs=1M count=3000
 sudo mkswap swapfile
@@ -32,6 +29,24 @@ sudo chmod 0600 /swapfile
 sudo swapon swapfile
 echo "/swapfile none swap sw 0 0" | sudo tee -a etc/fstab > /dev/null
 cd $PREV
+
+}
+
+
+prompt_swapfile() {
+
+echo ""
+echo "Can we make you a 3gb swapfile? EC2 Micro needs it because it takes a lot of memory to build BTCP."
+echo ""
+read -r -p "[y/N] " response
+case "$response" in
+    [yY][eE][sS]|[yY]) 
+        make_swapfile
+        ;;
+    *)
+        echo "Not creating swapfile."
+        ;;
+esac
 
 }
 
@@ -54,31 +69,50 @@ fi
 # Build Bitcoin Private
 ./BitcoinPrivate/btcputil/build.sh -j$(nproc)
 
-#Make hidden .btcprivate dir because the daemon has not ran and created the folder yet
+# Make .btcprivate dir (btcpd hasn't been run) 
 if [ ! -e ~/.btcprivate/ ]
 then
-  echo "Bitcoin Private Data Dir(.btcprivate) does not exist in the current user home directory, creating folder..."
   mkdir ~/.btcprivate
 fi
 
-#Then download the blockchain.tar.gz and extract to speed up the initial syncing when first starting
-echo "Bitcoin Private Data Dir(.btcprivate) does exist in the current user home directory. Downloading and Extracting files"
-cd ~/.btcprivate
-wget https://storage.googleapis.com/btcpblockchain/blockchain.tar.gz
-tar -zxvf blockchain.tar.gz
-echo "Downloading and extracting of blockchain files completed"
-
-# Make initial, empty btcprivate.conf if needed
+# Make empty btcprivate.conf if needed; otherwise use existing
 if [ ! -e ~/.btcprivate/btcprivate.conf ]
 then
   touch ~/.btcprivate/btcprivate.conf
 fi
 
+fetch_btcp_blockchain
 
+}
+
+# Download + decompress blockchain.tar.gz (chainstate) to quickly sync past block 300,000
+
+fetch_btcp_blockchain() {
+
+cd ~/.btcprivate
+
+wget https://storage.googleapis.com/btcpblockchain/blockchain.tar.gz
+tar -zxvf blockchain.tar.gz
+echo "Downloading and extracting blockchain files - Done."
+rm -rf blockchain.tar.gz
+
+}
+
+fetch_btcp_binaries() {
+
+mkdir -p ~/BitcoinPrivate/src
+cd ~/BitcoinPrivate/src
+
+wget https://github.com/BTCPrivate/BitcoinPrivate/releases/1.0.12/btcp-linux-1.0.12.tar.gz
+tar -zxvf btcp-1.0.12-linux.tar.gz
+echo "Downloading and extracting BTCP files - Done."
+rm -rf btcp-1.0.12-linux.tar.gz
 
 }
 
 install_nvm_npm() {
+
+cd ~
 
 # Install npm
 sudo apt-get -y install npm
@@ -89,7 +123,7 @@ wget -qO- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | b
 # Set up nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm 
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion 
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion 
 
 # Install node v4
 nvm install v4
@@ -98,7 +132,7 @@ nvm alias default v4
 
 }
 
-# MongoDB dependency for bitcore-wallet-service:
+# MongoDB dependency for bitcore:
 
 install_mongodb() {
 
@@ -113,7 +147,6 @@ sudo mkdir -p /data/db
 
 }
 
- 
 install_bitcore() {
 
 cd ~
@@ -128,7 +161,6 @@ cd btcp-explorer
 # Install Insight API / UI (Explorer) (Headless)
 ../node_modules/bitcore-node-btcp/bin/bitcore-node install BTCPrivate/insight-api-btcp BTCPrivate/insight-ui-btcp BTCPrivate/store-demo
 # (BTCPrivate/address-watch) (BTCPrivate/bitcore-wallet-service (untested))
-
 
 # Create config file for Bitcore
 cat << EOF > bitcore-node.json
@@ -162,26 +194,30 @@ EOF
 
 }
 
-# -- Begin Fetching + Building --
-cd ~ 
+
+run_install() {
 
 echo "Begin Setup."
 echo ""
 
 install_ubuntu
 
+
+echo "How would you like to build BTCP (btcpd and btcp-cli):"
+echo "1) From source code (takes a long time)"
+echo "2) Just download latest btcpd + btcp-cli binary"
 echo ""
-echo "Can we make you a 3gb swapfile? EC2 Micro needs it because it takes a lot of memory to build BTCP."
-echo ""
-read -r -p "[y/N] " response
+read -r -p "[1/2] " local response
 case "$response" in
-    [yY][eE][sS]|[yY]) 
-        make_swapfile
+    [1]) 
+        prompt_swapfile
         clone_and_build_btcp
         ;;
-    *)
-        clone_and_build_btcp 
+    [2])
+        fetch_btcp_binaries
         ;;
+    *)
+        echo "Neither; Skipped."
 esac
 
 
@@ -199,9 +235,18 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm 
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion 
 
-echo "To start mongodb for bitcore-wallet-service, run 'mongod &'"
+#echo "To start mongodb for bitcore-wallet-service, run 'mongod &'"
 echo "To start the bitcore-node, run:"
 echo "cd ~/btcp-explorer; nvm use v4; ./node_modules/bitcore-node-btcp/bin/bitcore-node start"
 echo ""
-echo "To view the explorer in your browser - http://server_ip:8001"
+echo "To view the explorer - http://server_ip:8001"
+echo "To view the store demo in your browser - http://server_ip:8001"
 echo "For https, we recommend you route through Cloudflare. bitcore-node also supports it via the config; provide certs."
+
+}
+
+# *** INSTALL SCRIPT START ***
+
+cd ~ 
+run_install
+
