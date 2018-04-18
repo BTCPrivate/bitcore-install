@@ -69,6 +69,10 @@ fi
 # Build Bitcoin Private
 ./BitcoinPrivate/btcputil/build.sh -j$(nproc)
 
+}
+
+init_btcprivate_dotdir() {
+
 # Make .btcprivate dir (btcpd hasn't been run) 
 if [ ! -e ~/.btcprivate/ ]
 then
@@ -81,15 +85,14 @@ then
   touch ~/.btcprivate/btcprivate.conf
 fi
 
+cd ~/.btcprivate
+
+# Download + decompress blockchain.tar.gz (chainstate) to quickly sync past block 300,000
 fetch_btcp_blockchain
 
 }
 
-# Download + decompress blockchain.tar.gz (chainstate) to quickly sync past block 300,000
-
 fetch_btcp_blockchain() {
-
-cd ~/.btcprivate
 
 wget https://storage.googleapis.com/btcpblockchain/blockchain.tar.gz
 tar -zxvf blockchain.tar.gz
@@ -220,6 +223,7 @@ case "$response" in
         echo "Neither; Skipped."
 esac
 
+init_btcprivate_dotdir
 
 install_nvm_npm
 
