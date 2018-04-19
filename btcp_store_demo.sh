@@ -95,10 +95,13 @@ fetch_btcp_blockchain
 
 fetch_btcp_blockchain() {
 
-wget https://storage.googleapis.com/btcpblockchain/blockchain.tar.gz
-tar -zxvf blockchain.tar.gz
+cd ~/.btcprivate
+
+local FILE = "blockchain-explorer.tar.gz"
+wget https://storage.googleapis.com/btcpblockchain/$FILE
+tar -zxvf $FILE
 echo "Downloading and extracting blockchain files - Done."
-rm -rf blockchain.tar.gz
+rm -rf $FILE
 
 }
 
