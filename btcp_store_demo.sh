@@ -217,7 +217,7 @@ echo ""
 echo "Begin Setup - Installing required packages."
 echo ""
 
-install_ubuntu
+install_ubuntu > /dev/null
 
 echo ""
 echo "How would you like to fetch BTCP (btcpd and btcp-cli):"
