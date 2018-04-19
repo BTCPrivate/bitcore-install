@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # !!! EC2 - Make sure port 8001 is in your security group
-# Run this in a fresh environment. 
+
+# !!! Run this in a fresh environment. 
 
 install_ubuntu() {
 
@@ -32,7 +33,6 @@ echo "/swapfile none swap sw 0 0" | sudo tee -a etc/fstab > /dev/null
 cd $PREV
 
 }
-
 
 prompt_swapfile() {
 
@@ -88,7 +88,7 @@ fi
 
 cd ~/.btcprivate
 
-# Download + decompress blockchain.tar.gz (chainstate) to quickly sync past block 300,000
+# Download + decompress blockchain.tar.gz (blocks/, chainstate/) to quickly sync past block 300,000
 fetch_btcp_blockchain
 
 }
@@ -107,13 +107,13 @@ fetch_btcp_binaries() {
 mkdir -p ~/BitcoinPrivate/src
 cd ~/BitcoinPrivate/src
 
-# TODO create -explorer releases
-local RELEASE = "1.0.11-5d06772-explorer"
-
-wget https://github.com/BTCPrivate/BitcoinPrivate/releases/$RELEASE/btcp-linux-$RELEASE.tar.gz
-tar -zxvf btcp-${RELEASE}-linux.tar.gz
+local RELEASE = "1.0.11"
+local COMMIT = "d3905b0"
+local FILE = "btcp-${RELEASE}-explorer-${COMMIT}-linux.tar.gz"
+wget https://github.com/BTCPrivate/BitcoinPrivate/releases/download/v${RELEASE}-${COMMIT}/${FILE}
+tar -zxvf $FILE
 echo "Downloading and extracting BTCP files - Done."
-rm -rf btcp-${RELEASE}-linux.tar.gz
+rm -rf $FILE
 
 }
 
@@ -167,9 +167,10 @@ cd btcp-explorer
 
 # Install Insight API / UI (Explorer) (Headless)
 ../node_modules/bitcore-node-btcp/bin/bitcore-node install BTCPrivate/insight-api-btcp BTCPrivate/insight-ui-btcp BTCPrivate/store-demo
-# (BTCPrivate/address-watch) (BTCPrivate/bitcore-wallet-service (untested))
+# BTCPrivate/address-watch, BTCPrivate/bitcore-wallet-service (untested)
 
 # Create config file for Bitcore
+local BITCORE_SERVICE_APP = "store-demo" #address-watch, bitcore-wallet-service
 cat << EOF > bitcore-node.json
 {
   "network": "livenet",
@@ -178,7 +179,7 @@ cat << EOF > bitcore-node.json
     "bitcoind",
     "insight-api-btcp",
     "insight-ui-btcp",
-    "store-demo",
+    "$BITCORE_SERVICE_APP",
     "web"
   ],
   "servicesConfig": {
@@ -199,31 +200,35 @@ cat << EOF > bitcore-node.json
 }
 EOF
 
+#TODO Prompt option + Automate SSL Setup (LetsEncrypt)
+#"https": true,
+#"privateKeyFile": "/etc/ssl/bws.bitpay.com.key",
+#"certificateFile": "/etc/ssl/bws.bitpay.com.crt",
+
 }
 
 
 run_install() {
 
 echo ""
-echo "Begin Setup."
+echo "Begin Setup - Installing required packages."
 echo ""
 
 install_ubuntu
 
-
 echo ""
-echo "How would you like to build BTCP (btcpd and btcp-cli):"
-echo "1) From source code (takes a long time)"
-echo "2) Just download latest btcpd + btcp-cli binary"
+echo "How would you like to fetch BTCP (btcpd and btcp-cli):"
+echo "1) [fast] Download the latest binaries"
+echo "2) [slow] Download + build from source code"
 echo ""
 read -r -p "[1/2] " response
 case "$response" in
     [1]) 
-        prompt_swapfile
-        clone_and_build_btcp
+        fetch_btcp_binaries
         ;;
     [2])
-        #fetch_btcp_binaries
+        prompt_swapfile
+        clone_and_build_btcp
         ;;
     *)
         echo "Neither; Skipped."
@@ -246,17 +251,17 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm 
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion 
 
-#echo "To start mongodb for bitcore-wallet-service, run 'mongod &'"
-echo "To start the bitcore-node, run:"
+echo "To start the demo, run:"
 echo "cd ~/btcp-explorer; nvm use v4; ./node_modules/bitcore-node-btcp/bin/bitcore-node start"
 echo ""
-echo "To view the explorer - http://server_ip:8001"
-echo "To view the store demo in your browser - http://server_ip:8001"
-echo "For https, provide certs in the config"
+echo "To view the demo in your browser:"
+echo "http://my_ip:8001"
+echo ""
 
 }
 
-# *** INSTALL SCRIPT START ***
+
+# *** SCRIPT START ***
 
 cd ~ 
 run_install
