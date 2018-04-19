@@ -1,14 +1,18 @@
-# bitcore-install
+# bitcore-install - v0.0.1
 
 ### Vendor backend samples for BTCP (Javascript, Bitcore)
 
-Run any one of these in a fresh Ubuntu VM to get started.
+Run any one of these in a fresh Ubuntu VM to get started:
 
-`btcp_store_demo.sh` - Creates a bitcore fullnode configured for `store-demo`, as well as block explorer + api
+#### `btcp_store_demo.sh`
+- Creates a bitcore fullnode configured for `store-demo`, as well as block explorer + api
+- **Public AMI:** BTCP-store-demo
 
-`btcp_explorer_demo.sh` - Creates a bitcore fullnode configured for block explorer + api (`insight-ui-btcp` and `insight-api-btcp`)
+#### `btcp_explorer_demo.sh`
+- Creates a bitcore fullnode configured for block explorer + api (`insight-ui-btcp` and `insight-api-btcp`)
 
-`btcp_fetch_wallet.sh` - Acquires `btcpd` and `btcp-cli`, by either fetching the [source on the explorer-btcp branch](https://github.com/BTCPrivate/BitcoinPrivate/tree/explorer-btcp) and building, or downloading the corresponding release binaries
+#### `btcp_fetch_wallet.sh`
+- Acquires `btcpd` and `btcp-cli` by either downloading the [latest indexing-enabled binaries](https://github.com/BTCPrivate/BitcoinPrivate/releases/tag/v1.0.11-d3905b0), or by fetching the [source on the explorer-btcp branch](https://github.com/BTCPrivate/BitcoinPrivate/tree/explorer-btcp) and building
 
 
 # Related Repos
