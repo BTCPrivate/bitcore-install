@@ -93,6 +93,12 @@ fetch_btcp_blockchain
 
 }
 
+fetch_zcash_params() {
+
+wget -qO- https://raw.githubusercontent.com/BTCPrivate/BitcoinPrivate/master/btcputil/fetch-params.sh | bash
+
+}
+
 fetch_btcp_blockchain() {
 
 cd ~/.btcprivate
@@ -227,6 +233,7 @@ echo ""
 read -r -p "[1/2] " response
 case "$response" in
     [1]) 
+        fetch_zcash_params
         fetch_btcp_binaries
         ;;
     [2])
