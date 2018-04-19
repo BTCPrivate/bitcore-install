@@ -97,7 +97,7 @@ fetch_btcp_blockchain() {
 
 cd ~/.btcprivate
 
-local FILE = "blockchain-explorer.tar.gz"
+local FILE="blockchain-explorer.tar.gz"
 wget https://storage.googleapis.com/btcpblockchain/$FILE
 tar -zxvf $FILE
 echo "Downloading and extracting blockchain files - Done."
@@ -110,9 +110,9 @@ fetch_btcp_binaries() {
 mkdir -p ~/BitcoinPrivate/src
 cd ~/BitcoinPrivate/src
 
-local RELEASE = "1.0.11"
-local COMMIT = "d3905b0"
-local FILE = "btcp-${RELEASE}-explorer-${COMMIT}-linux.tar.gz"
+local RELEASE="1.0.11"
+local COMMIT="d3905b0"
+local FILE="btcp-${RELEASE}-explorer-${COMMIT}-linux.tar.gz"
 wget https://github.com/BTCPrivate/BitcoinPrivate/releases/download/v${RELEASE}-${COMMIT}/${FILE}
 tar -zxvf $FILE
 echo "Downloading and extracting BTCP files - Done."
@@ -169,11 +169,11 @@ npm install BTCPrivate/bitcore-node-btcp
 cd btcp-explorer
 
 # Install Insight API / UI (Explorer) (Headless)
-../node_modules/bitcore-node-btcp/bin/bitcore-node install BTCPrivate/insight-api-btcp BTCPrivate/insight-ui-btcp BTCPrivate/store-demo
-# BTCPrivate/address-watch, BTCPrivate/bitcore-wallet-service (untested)
+../node_modules/bitcore-node-btcp/bin/bitcore-node install BTCPrivate/insight-api-btcp BTCPrivate/insight-ui-btcp BTCPrivate/store-demo # BTCPrivate/address-watch, BTCPrivate/bitcore-wallet-service (untested)
+
+local BITCORE_SERVICE_APP="store-demo" #address-watch, bitcore-wallet-service
 
 # Create config file for Bitcore
-local BITCORE_SERVICE_APP = "store-demo" #address-watch, bitcore-wallet-service
 cat << EOF > bitcore-node.json
 {
   "network": "livenet",
