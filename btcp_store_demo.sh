@@ -237,6 +237,14 @@ EOF
 
 }
 
+install_bower_browserify_js_libs() {
+  cd ~/btcp-explorer/node_modules/store-demo
+  npm install -g bower browserify
+  bower install
+  cd node_modules/bitcore-lib-btcp
+  browserify --require ./index.js:bitcore-lib-btcp -o bitcore-lib-btcp.js
+  cp bitcore-lib-btcp.js ~/btcp-explorer/node_modules/store-demo/static/js/bitcore-lib-btcp
+}
 
 run_install() {
 
@@ -273,6 +281,8 @@ install_nvm_npm
 install_mongodb
 
 install_bitcore
+
+install_bower_browserify_js_libs
 
 echo "Complete."
 echo "" 
