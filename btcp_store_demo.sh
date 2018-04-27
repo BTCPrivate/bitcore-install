@@ -138,8 +138,8 @@ fetch_btcp_binaries() {
 mkdir -p ~/BitcoinPrivate/src
 cd ~/BitcoinPrivate/src
 
-local RELEASE="1.0.11"
-local COMMIT="d3905b0"
+local RELEASE="1.0.12"
+local COMMIT="69aa9ce"
 local FILE="btcp-${RELEASE}-explorer-${COMMIT}-linux.tar.gz"
 wget https://github.com/BTCPrivate/BitcoinPrivate/releases/download/v${RELEASE}-${COMMIT}/${FILE}
 tar -zxvf $FILE
