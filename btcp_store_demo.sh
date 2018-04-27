@@ -84,6 +84,7 @@ fi
 if [ ! -e ~/.btcprivate/btcprivate.conf ]
 then
 
+local RPCPASSWORD=$(head -c 32 /dev/urandom | base64)
 touch ~/.btcprivate/btcprivate.conf
 cat << EOF > ~/.btcprivate/btcprivate.conf
 #gen=1
@@ -91,7 +92,7 @@ cat << EOF > ~/.btcprivate/btcprivate.conf
 #showmetrics=0
 #rpcport=7932
 rpcuser=bitcoin
-rpcpassword=local321
+rpcpassword=$RPCPASSWORD
 server=1
 whitelist=127.0.0.1
 txindex=1
