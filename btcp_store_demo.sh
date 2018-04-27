@@ -83,7 +83,28 @@ fi
 # Make empty btcprivate.conf if needed; otherwise use existing
 if [ ! -e ~/.btcprivate/btcprivate.conf ]
 then
-  touch ~/.btcprivate/btcprivate.conf
+
+touch ~/.btcprivate/btcprivate.conf
+cat << EOF > ~/.btcprivate/btcprivate.conf
+#gen=1
+#reindex=1
+#showmetrics=0
+#rpcport=7932
+rpcuser=bitcoin
+rpcpassword=local321
+server=1
+whitelist=127.0.0.1
+txindex=1
+addressindex=1
+timestampindex=1
+spentindex=1
+zmqpubrawtx=tcp://127.0.0.1:28332
+zmqpubhashblock=tcp://127.0.0.1:28332
+rpcallowip=127.0.0.1
+uacomment=bitcore
+addnode=dnsseed.btcprivate.org
+EOF
+
 fi
 
 cd ~/.btcprivate
