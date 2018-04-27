@@ -6,7 +6,7 @@ Run any one of these in a fresh Ubuntu VM to get started:
 
 #### `btcp_store_demo.sh`
 - Creates a bitcore fullnode configured for `store-demo`, as well as block explorer + api
-- **Public AMI:** BTCP-store-demo
+- **Public AMI:** BTCP-Store (ami-62e3881a)
 
 #### `btcp_explorer_demo.sh`
 - Creates a bitcore fullnode configured for block explorer + api (`insight-ui-btcp` and `insight-api-btcp`)
