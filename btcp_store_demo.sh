@@ -126,7 +126,7 @@ fetch_btcp_blockchain() {
 cd ~/.btcprivate
 
 local FILE="blockchain-explorer.tar.gz"
-wget https://storage.googleapis.com/btcpblockchain/$FILE
+wget -c https://storage.googleapis.com/btcpblockchain/$FILE
 tar -zxvf $FILE
 echo "Downloading and extracting blockchain files - Done."
 rm -rf $FILE
@@ -141,7 +141,7 @@ cd ~/BitcoinPrivate/src
 local RELEASE="1.0.12"
 local COMMIT="69aa9ce"
 local FILE="btcp-${RELEASE}-explorer-${COMMIT}-linux.tar.gz"
-wget https://github.com/BTCPrivate/BitcoinPrivate/releases/download/v${RELEASE}-${COMMIT}/${FILE}
+wget -c https://github.com/BTCPrivate/BitcoinPrivate/releases/download/v${RELEASE}-${COMMIT}/${FILE}
 tar -zxvf $FILE
 echo "Downloading and extracting BTCP files - Done."
 rm -rf $FILE
@@ -152,7 +152,7 @@ install_nvm_npm() {
 
 cd ~
 
-# Install npm
+# Install npm 
 sudo apt-get -y install npm
 
 # Install nvm (npm version manager)
