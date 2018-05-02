@@ -201,12 +201,13 @@ cd btcp-explorer
 ../node_modules/bitcore-node-btcp/bin/bitcore-node install BTCPrivate/insight-api-btcp BTCPrivate/insight-ui-btcp BTCPrivate/store-demo # BTCPrivate/address-watch, BTCPrivate/bitcore-wallet-service (untested)
 
 local BITCORE_SERVICE_APP="store-demo" #address-watch, bitcore-wallet-service
+local PORT=8001
 
 # Create config file for Bitcore
 cat << EOF > bitcore-node.json
 {
   "network": "livenet",
-  "port": 8001,
+  "port": $PORT,
   "services": [
     "bitcoind",
     "insight-api-btcp",
@@ -234,18 +235,21 @@ EOF
 }
 
 install_bower_browserify_js_libs() {
+  npm install -g bower browserify pm2
+
+  # Build bitcore-lib-btcp.js + copy to invoice server's js/ dir
   cd ~/btcp-explorer/node_modules/store-demo
-  npm install -g bower browserify
   bower install
   cd node_modules/bitcore-lib-btcp
   browserify --require ./index.js:bitcore-lib-btcp -o bitcore-lib-btcp.js
   cp bitcore-lib-btcp.js ~/btcp-explorer/node_modules/store-demo/static/js/bitcore-lib-btcp
 }
 
+
 run_install() {
 
 echo ""
-echo "Begin Setup - Installing required packages."
+echo "BTCP Merchant Backend Setup - Installing dependencies."
 echo ""
 
 install_ubuntu > /dev/null
@@ -280,7 +284,7 @@ install_bitcore
 
 install_bower_browserify_js_libs
 
-echo "Complete."
+echo "Installation Complete."
 echo "" 
 
 # Verify that nvm is exported
@@ -288,11 +292,10 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm 
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion 
 
-echo "To start the demo, run:"
-echo "cd ~/btcp-explorer; nvm use v4; ./node_modules/bitcore-node-btcp/bin/bitcore-node start"
+echo "To start the daemon + its interface, run:"
+echo "cd ~/btcp-explorer; pm2 start.sh"
 echo ""
-echo "To view the demo in your browser:"
-echo "http://my_ip:8001"
+echo "Runs on port $PORT."
 echo ""
 
 }
