@@ -104,6 +104,7 @@ zmqpubhashblock=tcp://127.0.0.1:28332
 rpcallowip=127.0.0.1
 uacomment=bitcore
 addnode=dnsseed.btcprivate.org
+showmetrics=0
 EOF
 
 fi
@@ -209,8 +210,6 @@ cat << EOF > bitcore-node.json
   "services": [
     "bitcoind",
     "insight-api-btcp",
-    "insight-ui-btcp",
-    "$BITCORE_SERVICE_APP",
     "web"
   ],
   "servicesConfig": {
@@ -219,10 +218,6 @@ cat << EOF > bitcore-node.json
         "datadir": "$HOME/.btcprivate",
         "exec": "$HOME/BitcoinPrivate/src/btcpd"
        }
-     },
-     "insight-ui-btcp": {
-       "apiPrefix": "api",
-       "routePrefix": ""
      },
      "insight-api-btcp": {
        "routePrefix": "api"
