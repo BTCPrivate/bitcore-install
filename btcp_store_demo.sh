@@ -298,7 +298,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion 
 
 echo "To start the daemon + its interfaces, run:"
-echo "cd ~/btcp-explorer; bitcore-node start"
+echo "cd ~/btcp-explorer; ./bitcore-node start"
 echo ""
 echo "Runs on port $PORT (bitcore-node.json)."
 echo ""
