@@ -25,7 +25,7 @@ make_swapfile() {
 
 local PREV=$PWD
 cd /
-sudo dd if=/dev/zero of=swapfile bs=1M count=3000
+sudo dd if=/dev/zero of=swapfile bs=1M count=$1
 sudo mkswap swapfile
 sudo chmod 0600 /swapfile
 sudo swapon swapfile
@@ -35,18 +35,24 @@ cd $PREV
 }
 
 prompt_swapfile() {
+  #[yY][eE][sS]|[yY]) 
 
 echo ""
-echo "Can we make you a 3gb swapfile? EC2 Micro needs it because it takes a lot of memory to build BTCP."
-echo ""
-read -r -p "[y/N] " response
+echo "Can we make you a swapfile? EC2 Micro has limited RAM."
+echo "1) 1GB - recommended for running Bitcore + MongoDB"
+echo "2) 3GB - required when building btcpd from source"
+echo "3) No Swapfile - not recommended on EC2 Micro"
+read -r -p "[1/2/3] " response
 case "$response" in
-    [yY][eE][sS]|[yY]) 
-        make_swapfile
-        ;;
-    *)
-        echo "Not creating swapfile."
-        ;;
+  [1])
+    make_swapfile 1024
+    ;;
+  [2])
+    make_swapfile 3072
+    ;;
+  *)
+    echo "Not creating swapfile."
+    ;;
 esac
 
 }
@@ -108,12 +114,7 @@ showmetrics=0
 EOF
 
 fi
-
-cd ~/.btcprivate
-
-# Download + decompress blockchain.tar.gz (blocks/, chainstate/) to quickly sync past block 300,000
-fetch_btcp_blockchain
-
+ 
 }
 
 fetch_zcash_params() {
@@ -122,6 +123,7 @@ wget -qO- https://raw.githubusercontent.com/BTCPrivate/BitcoinPrivate/master/btc
 
 }
 
+# Download + decompress blockchain.tar.gz (blocks/, chainstate/) to quickly sync past block 300,000
 fetch_btcp_blockchain() {
 
 cd ~/.btcprivate
@@ -150,8 +152,6 @@ rm -rf $FILE
 }
 
 install_nvm_npm() {
-
-cd ~
 
 # Install npm 
 sudo apt-get -y install npm
@@ -198,7 +198,7 @@ npm install BTCPrivate/bitcore-node-btcp
 cd btcp-explorer
 
 # Install Insight API / UI (Explorer) (Headless)
-../node_modules/bitcore-node-btcp/bin/bitcore-node install BTCPrivate/insight-api-btcp BTCPrivate/insight-ui-btcp BTCPrivate/store-demo # BTCPrivate/address-watch, BTCPrivate/bitcore-wallet-service (untested)
+../node_modules/bitcore-node-btcp/bin/bitcore-node install ch4ot1c/store-demo #BTCPrivate/insight-api-btcp BTCPrivate/insight-ui-btcp BTCPrivate/store-demo BTCPrivate/address-watch, BTCPrivate/bitcore-wallet-service (untested)
 
 # Symlink to bitcore-node to btcp-explorer dir
 ln -s node_modules/bitcore-node-btcp/bin/bitcore-node bitcore-node
@@ -213,7 +213,7 @@ cat << EOF > bitcore-node.json
   "port": $PORT,
   "services": [
     "bitcoind",
-    "insight-api-btcp",
+    "$BITCORE_SERVICE_APP",
     "web"
   ],
   "servicesConfig": {
@@ -223,8 +223,8 @@ cat << EOF > bitcore-node.json
         "exec": "$HOME/BitcoinPrivate/src/btcpd"
        }
      },
-     "insight-api-btcp": {
-       "routePrefix": "api"
+     "store-demo": {
+       "mongoURL": "http://localhost:27017/store-demo"
      }
   }
 }
@@ -232,32 +232,38 @@ EOF
 
 #TODO Prompt option + Automate SSL Setup (LetsEncrypt)
 #"https": true,
-#"privateKeyFile": "/etc/ssl/bws.bitpay.com.key",
-#"certificateFile": "/etc/ssl/bws.bitpay.com.crt",
+#"privateKeyFile": "/etc/ssl/x.key",
+#"certificateFile": "/etc/ssl/x.crt",
 
 }
 
-install_bower_browserify_js_libs() {
+install_bower_browserify_uglify_js_libs() {
   echo "Globally installing bower, browserify"
-  npm install -g bower browserify
-  #sudo npm install -g pm2
+  npm install -g bower browserify uglify
 
-  # Build bitcore-lib-btcp.js + copy to invoice server's js/ dir
+  # Build bitcore-lib.js + uglify + copy to widget's js/ dir
   cd ~/btcp-explorer/node_modules/store-demo
   bower install
-  cd node_modules/bitcore-lib-btcp
-  browserify --require ./index.js:bitcore-lib-btcp -o bitcore-lib-btcp.js
-  cp bitcore-lib-btcp.js ~/btcp-explorer/node_modules/store-demo/static/js/bitcore-lib-btcp
+  cd node_modules/bitcore-lib
+  browserify --require ./index.js:bitcore-lib -o bitcore-lib.js
+  uglify bitcore-lib.js
+  cp {bitcore-lib.js,bitcore-lib.min.js} ~/btcp-explorer/node_modules/store-demo/static/js/bitcore-lib
 }
 
 
 run_install() {
 
+echo ---
 echo ""
 echo "BTCP Merchant Backend Setup - Installing dependencies."
 echo ""
+echo ---
 
-install_ubuntu > /dev/null
+install_ubuntu
+
+echo ""
+
+prompt_swapfile
 
 echo ""
 echo "How would you like to fetch BTCP (btcpd and btcp-cli):"
@@ -271,7 +277,6 @@ case "$response" in
         fetch_btcp_binaries
         ;;
     [2])
-        prompt_swapfile
         clone_and_build_btcp
         ;;
     *)
@@ -281,13 +286,20 @@ esac
 
 init_btcprivate_dotdir
 
+fetch_btcp_blockchain
+
+
 install_nvm_npm
 
 install_mongodb
 
+cd ~
+
 install_bitcore
 
 install_bower_browserify_js_libs
+
+cd ~
 
 echo "Installation Complete."
 echo "" 
