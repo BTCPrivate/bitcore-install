@@ -35,7 +35,6 @@ cd $PREV
 }
 
 prompt_swapfile() {
-  #[yY][eE][sS]|[yY]) 
 
 echo ""
 echo "Can we make you a swapfile? EC2 Micro has limited RAM."
@@ -144,7 +143,7 @@ cd ~/BitcoinPrivate/src
 local RELEASE="1.0.12"
 local COMMIT="69aa9ce"
 local FILE="btcp-${RELEASE}-explorer-${COMMIT}-linux.tar.gz"
-wget -c https://github.com/BTCPrivate/BitcoinPrivate/releases/download/v${RELEASE}-${COMMIT}/${FILE}
+wget -c https://github.com/BTCPrivate/BitcoinPrivate/releases/download/${RELEASE}-${COMMIT}/${FILE}
 tar -zxvf $FILE
 echo "Downloading and extracting BTCP files - Done."
 rm -rf $FILE
@@ -224,7 +223,7 @@ cat << EOF > bitcore-node.json
        }
      },
      "store-demo": {
-       "mongoURL": "http://localhost:27017/store-demo"
+       "mongoURL": "mongodb://localhost:27017/store-demo"
      }
   }
 }
@@ -238,15 +237,16 @@ EOF
 }
 
 install_bower_browserify_uglify_js_libs() {
-  echo "Globally installing bower, browserify"
+  echo "Globally installing bower, browserify, uglify"
   npm install -g bower browserify uglify
 
-  # Build bitcore-lib.js + uglify + copy to widget's js/ dir
   cd ~/btcp-explorer/node_modules/store-demo
   bower install
+
+  # Build bitcore-lib.js + uglify + copy to widget's js/ dir
   cd node_modules/bitcore-lib
   browserify --require ./index.js:bitcore-lib -o bitcore-lib.js
-  uglify bitcore-lib.js
+  uglify -s bitcore-lib.js -o bitcore-lib.min.js
   cp {bitcore-lib.js,bitcore-lib.min.js} ~/btcp-explorer/node_modules/store-demo/static/js/bitcore-lib
 }
 
@@ -297,7 +297,7 @@ cd ~
 
 install_bitcore
 
-install_bower_browserify_js_libs
+install_bower_browserify_uglify_js_libs
 
 cd ~
 
@@ -313,6 +313,9 @@ echo "To start the daemon + its interfaces, run:"
 echo "cd ~/btcp-explorer; ./bitcore-node start"
 echo ""
 echo "Runs on port $PORT (bitcore-node.json)."
+echo ""
+echo "Note - MongoDB needs to be running in the background for store-demo:"
+echo "mongod &"
 echo ""
 
 }
