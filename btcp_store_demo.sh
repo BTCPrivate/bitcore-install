@@ -89,7 +89,7 @@ fi
 if [ ! -e ~/.btcprivate/btcprivate.conf ]
 then
 
-local RPCPASSWORD=$(head -c 32 /dev/urandom | base64)
+local RPCPASSWORD=$(openssl rand -base64 32 | tr -d /=+ | cut -c -30)
 touch ~/.btcprivate/btcprivate.conf
 cat << EOF > ~/.btcprivate/btcprivate.conf
 #gen=1
