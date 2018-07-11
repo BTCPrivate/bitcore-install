@@ -1,18 +1,17 @@
-# bitcore-install - v0.0.1
+# bitcore-install - v0.0.3
 
 ### Vendor backend samples for BTCP (Javascript, Bitcore)
 
 Run any one of these in a fresh Ubuntu VM to get started:
 
 #### `btcp_store_demo.sh`
-- Creates a bitcore fullnode configured for `store-demo`, as well as block explorer + api
-- **Public AMI:** BTCP-Store (ami-62e3881a)
+- Creates a javascript full-node (bitcore, with the [btcpd](https://github.com/BTCPrivate/BitcoinPrivate/tree/explorer-btcp) daemon), listening on port 8001. By default, includes `insight-api-btcp`.
 
 #### `btcp_explorer_demo.sh`
-- Creates a bitcore fullnode configured for block explorer + api (`insight-ui-btcp` and `insight-api-btcp`)
+- Creates a javascript full-node configured for block explorer + api (`insight-ui-btcp` and `insight-api-btcp`)
 
-#### `btcp_fetch_wallet.sh`
-- Acquires `btcpd` and `btcp-cli` by either downloading the [latest indexing-enabled binaries](https://github.com/BTCPrivate/BitcoinPrivate/releases/tag/v1.0.11-d3905b0), or by fetching the [source on the explorer-btcp branch](https://github.com/BTCPrivate/BitcoinPrivate/tree/explorer-btcp) and building
+#### `btcp_daemon_only.sh`
+- Acquires `btcpd` and `btcp-cli` by either downloading the [latest indexing-enabled binaries](https://github.com/BTCPrivate/BitcoinPrivate/releases/tag/1.0.12-69aa9ce), or by fetching the [source on the explorer-btcp branch](https://github.com/BTCPrivate/BitcoinPrivate/tree/explorer-btcp) and building
 
 
 # Related Repos
@@ -29,5 +28,5 @@ Run any one of these in a fresh Ubuntu VM to get started:
 
 - [Bitcoin Private Daemon + CLI](https://github.com/BTCPrivate/BitcoinPrivate/tree/explorer-btcp)
 
-Runs with bitcore-node-btcp (fork of bitcore-node v4) on bitcore v3.1. Original work: [str4d/insight-api-zcash](https://github.com/str4d/insight-api-zcash).
+Runs using bitcore-node-btcp (fork of bitcore-node v4) on bitcore v3.1. Original work: [str4d/insight-api-zcash](https://github.com/str4d/insight-api-zcash).
 
