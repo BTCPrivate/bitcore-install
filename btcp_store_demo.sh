@@ -244,7 +244,7 @@ install_bower_browserify_js_libs() {
 
   # Build bitcore-lib-btcp.js + copy to invoice server's js/ dir
   cd ~/btcp-explorer/node_modules/store-demo
-  bower install
+  bower install --allow-root
   cd node_modules/bitcore-lib-btcp
   browserify --require ./index.js:bitcore-lib-btcp -o bitcore-lib-btcp.js
   cp bitcore-lib-btcp.js ~/btcp-explorer/node_modules/store-demo/static/js/bitcore-lib-btcp
