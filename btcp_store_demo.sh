@@ -142,7 +142,7 @@ cd ~/BitcoinPrivate/src
 local RELEASE="1.0.12"
 local COMMIT="69aa9ce"
 local FILE="btcp-${RELEASE}-explorer-${COMMIT}-linux.tar.gz"
-wget -c https://github.com/BTCPrivate/BitcoinPrivate/releases/download/v${RELEASE}-${COMMIT}/${FILE}
+wget -c https://github.com/BTCPrivate/BitcoinPrivate/releases/download/${RELEASE}-${COMMIT}/${FILE}
 tar -zxvf $FILE
 echo "Downloading and extracting BTCP files - Done."
 rm -rf $FILE
